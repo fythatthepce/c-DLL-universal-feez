@@ -2,7 +2,6 @@
 #include <windows.h> 
 #include <TlHelp32.h> 
 #include <tchar.h>
-#include <string>
 
 
 DWORD dwGetModuleBaseAddress(DWORD dwProcessIdentifier, TCHAR *lpszModuleName)
@@ -28,8 +27,6 @@ DWORD dwGetModuleBaseAddress(DWORD dwProcessIdentifier, TCHAR *lpszModuleName)
 	}
 	return dwModuleBaseAddress;
 }
-
-
 
 DWORD FindDmaAddy(int PointerLevel, HANDLE hProcHandle, DWORD Offsets[], DWORD BaseAddress)
 {
@@ -71,6 +68,7 @@ void WriteToMemory(DWORD addressToWrite, char* valueToWrite, int byteNum)
 
 
 
+
 //1. GreenbaseAddress + offset + offset + ...   from cheat engine
 
 //Unlimit Ammo
@@ -81,7 +79,7 @@ void WriteToMemory(DWORD addressToWrite, char* valueToWrite, int byteNum)
 
 void INC_AMMO()
 {
-   //multi offset
+	//multi offset
 	DWORD AMMO_1 = (DWORD)(*(DWORD*)ADDR_BASE_AMMO + AMMO_OFFSET3);
 	DWORD AMMO_2 = (DWORD)(*(DWORD*)AMMO_1 + AMMO_OFFSET2);
 	*(DWORD*)(*(DWORD*)AMMO_2 + AMMO_OFFSET1) = 9999;   //value 9999
@@ -106,11 +104,8 @@ void INC_HP()
 	GetWindowThreadProcessId(window, &pID);
 	HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pID);
 
-
 	//HP >> "ac_client.exe" + 0010A280  offset   8  790  34  A4 488
 	DWORD baseAddr = dwGetModuleBaseAddress(pID, _T("ac_client.exe"));
-	//DWORD baseAddr2 = dwGetModuleBaseAddress(pID, _T("client.dll"));
-
 	int instance_handle_id = baseAddr;
 	int Final_BaseAddr3 = instance_handle_id + 0x0010A280;
 	DWORD HpOffsets[] = { 0x8, 0x790, 0x34, 0xA4, 0x488 };  //last to first offset from ce
@@ -120,9 +115,6 @@ void INC_HP()
 	DWORD AmmoAddressToWrite3 = FindDmaAddy(Hp_value_offsets, handle, HpOffsets, Final_BaseAddr3);
 	WriteProcessMemory(handle, (BYTE*)AmmoAddressToWrite3, &HpValue, sizeof(HpValue), NULL);
 	Sleep(1);
-    //end
-
-	
 }
 //End Unlimit HP
 
@@ -143,10 +135,6 @@ void AUTO_FIRE_OFF()
 	WriteToMemory(Auto_ADD, AutoDefaultOpCode, num_AutoDefaultOpCode);
 }
 //End Autofire
-
-
-
-
 
 
 void INC_BOMB()
@@ -170,4 +158,27 @@ void INC_BOMB()
 	WriteProcessMemory(handle, (BYTE*)AmmoAddressToWrite3, &BValue, sizeof(BValue), NULL);
 	Sleep(1);
 }
-//End Unlimit HP
+
+/*
+//4."client.dll" + 1213C4 no offset
+void INC_MONEY()
+{
+
+HWND window = FindWindow(NULL, _T("Counter-Strike"));
+DWORD pID = 0;
+GetWindowThreadProcessId(window, &pID);
+HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pID);
+
+
+//Money >> "client.dll" + 1213C4 no offset
+DWORD baseAddr = dwGetModuleBaseAddress(pID, _T("client.dll"));
+
+int instance_handle_id = baseAddr;
+int Final_BaseAddr3 = instance_handle_id + 0x001213C4;
+
+
+//if offset = NULL
+int MoneyValue = 9999;
+WriteProcessMemory(handle, (LPVOID)Final_BaseAddr3, &MoneyValue, sizeof(MoneyValue), 0);
+Sleep(1);
+}*/
